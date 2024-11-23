@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+
+# PROVIDE: bgpalerter
+# REQUIRE: NETWORKING
+# KEYWORD: shutdown
+#
+# Add the following lines to /etc/rc.conf to enable bgpalerter:
+# bgpalerter_enable="YES"
+#
+
+. /etc/rc.subr
+
+name="bgpalerter"
+rcvar=${name}_enable
+
+load_rc_config $name
+: ${bgpalerter_dir:="/usr/local/share/bgpalerter"}
+: ${bgpalerter_logdir:="/var/log/${name}"}
+: ${bgpalerter_logfile:="/var/log/${name}.log"}
+
+procname="daemon"
+pidfile="/var/run/${name}_${procname}.pid"
+bgpalerter_chdir="${bgpalerter_dir}"
+required_dirs="${bgpalerter_dir}"
+bgpalerter_env="PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:/root/bin"
+
+command="/usr/sbin/daemon"
+command_args="-R 3 -o ${bgpalerter_logfile} -P ${pidfile} /usr/local/bin/npm run serve --logs-dir=${bgpalerter_logdir}"
+
+run_rc_command "$1"
